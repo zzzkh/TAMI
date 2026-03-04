@@ -191,27 +191,30 @@ if __name__ == "__main__":
                                        save_model_name=args.save_model_name, logger=logger, model_name=args.model_name)
 
         loss_func = nn.BCEWithLogitsLoss()
+        halt = None
+        if args.use_halt:
+            halt = HALT(
+                base_negative_sampler=train_neg_edge_sampler,
+                neighbor_sampler=train_neighbor_sampler,
+                num_negatives=args.halt_num_negatives,
+                hard_ratio=args.halt_hard_ratio,
+                neighbor_k=args.num_neighbors,
+                base_tau=args.halt_base_tau,
+                tau_alpha=args.halt_tau_alpha,
+                tau_min=args.halt_tau_min,
+                tau_max=args.halt_tau_max,
+                device=args.device,
+            )
 
         # ================================
         plot_train_losses = []
+        plot_train_main_losses = []
+        plot_train_drift_losses = []
         plot_val_eval_metrics = None
         # ================================
 
         # Drifting loss: positive dst embedding bank (GPU ring buffer)
         pos_dst_bank = None
-
-        halt = HALT(
-            base_negative_sampler=train_neg_edge_sampler,
-            neighbor_sampler=train_neighbor_sampler,
-            num_negatives=args.halt_num_negatives,
-            hard_ratio=args.halt_hard_ratio,
-            neighbor_k=args.num_neighbors,
-            base_tau=args.halt_base_tau,
-            tau_alpha=args.halt_tau_alpha,
-            tau_min=args.halt_tau_min,
-            tau_max=args.halt_tau_max,
-            device=args.device,
-        )
 
         for epoch in range(args.num_epochs):
             model.train()
@@ -228,10 +231,11 @@ if __name__ == "__main__":
                 # reinitialize memory of memory-based models at the start of each epoch
                 model[0].memory_bank.__init_memory_bank__()
 
-            halt.reset_state()
+            if args.use_halt:
+                halt.reset_state()
 
             # store train losses and metrics
-            train_losses, train_metrics = [], []
+            train_losses, train_main_losses, train_drift_losses, train_metrics = [], [], [], []
             train_idx_data_loader_tqdm = tqdm(train_idx_data_loader, ncols=120)
 
             for batch_idx, train_data_indices in enumerate(train_idx_data_loader_tqdm):
@@ -240,9 +244,14 @@ if __name__ == "__main__":
                     train_data.src_node_ids[train_data_indices], train_data.dst_node_ids[train_data_indices], \
                     train_data.node_interact_times[train_data_indices], train_data.edge_ids[train_data_indices]
 
-                batch_neg_src_node_ids, batch_neg_dst_node_ids, batch_neg_node_interact_times, _ = halt.sample_negatives(
-                    batch_src_node_ids, batch_dst_node_ids, batch_node_interact_times
-                )
+                if args.use_halt:
+                    batch_neg_src_node_ids, batch_neg_dst_node_ids, batch_neg_node_interact_times, _ = halt.sample_negatives(
+                        batch_src_node_ids, batch_dst_node_ids, batch_node_interact_times
+                    )
+                else:
+                    _, batch_neg_dst_node_ids = train_neg_edge_sampler.sample(size=len(batch_src_node_ids))
+                    batch_neg_src_node_ids = batch_src_node_ids
+                    batch_neg_node_interact_times = batch_node_interact_times
 
                 # ========================================================================
                 # we need to compute for positive and negative edges respectively, because the new sampling strategy (for evaluation) allows the negative source nodes to be
@@ -333,9 +342,13 @@ if __name__ == "__main__":
                                                   src_emb=batch_neg_src_node_embeddings,
                                                   dst_emb=batch_neg_dst_node_embeddings).squeeze(dim=-1)
 
-                neg_logits = negative_logits.view(len(batch_src_node_ids), -1)
-                tau = halt.compute_temperature(batch_src_node_ids, batch_node_interact_times)
-                loss_main = halt.listwise_loss(positive_logits, neg_logits, tau)
+                if args.use_halt:
+                    neg_logits = negative_logits.view(len(batch_src_node_ids), -1)
+                    tau = halt.compute_temperature(batch_src_node_ids, batch_node_interact_times)
+                    loss_main = halt.listwise_loss(positive_logits, neg_logits, tau)
+                else:
+                    bce_labels = torch.cat([torch.ones_like(positive_logits), torch.zeros_like(negative_logits)], dim=0)
+                    loss_main = loss_func(input=torch.cat([positive_logits, negative_logits], dim=0), target=bce_labels)
 
                 logits = torch.cat([positive_logits, negative_logits], dim=0)
                 labels = torch.cat([torch.ones_like(positive_logits), torch.zeros_like(negative_logits)], dim=0)
@@ -374,6 +387,8 @@ if __name__ == "__main__":
                 loss = loss_main + args.drift_weight * drift_loss
 
                 train_losses.append(loss.item())
+                train_main_losses.append(loss_main.item())
+                train_drift_losses.append(drift_loss.item())
 
                 train_metrics.append(get_link_prediction_metrics(predicts=predicts, labels=labels))
 
@@ -381,7 +396,8 @@ if __name__ == "__main__":
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 optimizer.step()
-                halt.update_state(batch_src_node_ids, batch_dst_node_ids, batch_node_interact_times)
+                if args.use_halt:
+                    halt.update_state(batch_src_node_ids, batch_dst_node_ids, batch_node_interact_times)
 
                 if args.drift_weight > 0 and pos_dst_bank is not None:
                     pos_dst_bank.append(batch_dst_node_embeddings)
@@ -437,7 +453,7 @@ if __name__ == "__main__":
             # reload decoder validation memory bank for testing nodes or saving models
             model[1].historical_interaction_memory.load_memory_bank(val_dec_memory_bank)
 
-            logger.info(f'Epoch: {epoch + 1}, learning rate: {optimizer.param_groups[0]["lr"]}, train loss: {np.mean(train_losses):.4f}')
+            logger.info(f'Epoch: {epoch + 1}, learning rate: {optimizer.param_groups[0]["lr"]}, train loss: {np.mean(train_losses):.4f}, train loss_main: {np.mean(train_main_losses):.4f}, train drift_loss: {np.mean(train_drift_losses):.4f}')
             for metric_name in train_metrics[0].keys():
                 logger.info(f'train {metric_name}, {np.mean([train_metric[metric_name] for train_metric in train_metrics]):.4f}')
             logger.info(f'validate loss: {np.mean(val_losses):.4f}')
@@ -450,6 +466,8 @@ if __name__ == "__main__":
             # ==========================================================
             # for analysing:
             plot_train_losses.append(np.mean(train_losses))
+            plot_train_main_losses.append(np.mean(train_main_losses))
+            plot_train_drift_losses.append(np.mean(train_drift_losses))
 
             if plot_val_eval_metrics is None:
                 plot_val_eval_metrics = defaultdict(list)
@@ -615,6 +633,8 @@ if __name__ == "__main__":
             "test metrics": {metric_name: f'{test_metric_dict[metric_name]:.4f}' for metric_name in test_metric_dict},
             "new node test metrics": {metric_name: f'{new_node_test_metric_dict[metric_name]:.4f}' for metric_name in new_node_test_metric_dict},
             "train loss": plot_train_losses,
+            "train loss_main": plot_train_main_losses,
+            "train drift_loss": plot_train_drift_losses,
             "val stat": {
                 key: [f'{value:.4f}' for value in values]
                 for key, values in plot_val_eval_metrics.items()

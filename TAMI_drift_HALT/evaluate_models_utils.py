@@ -14,17 +14,7 @@ from utils.metrics import get_link_prediction_metrics, get_node_classification_m
 from utils.utils import set_random_seed
 from utils.utils import NegativeEdgeSampler, NeighborSampler
 from utils.DataLoader import Data
-
-
-def _compute_mrr(positive_scores: torch.Tensor, negative_scores: torch.Tensor) -> float:
-    """Dataset-agnostic MRR from one positive and K negatives per edge."""
-    if negative_scores.dim() == 1:
-        bsz = positive_scores.shape[0]
-        negative_scores = negative_scores.view(bsz, -1)
-
-    pos = positive_scores.view(-1, 1)
-    rank = 1 + (negative_scores > pos).sum(dim=1)
-    return torch.mean(1.0 / rank.float()).item()
+from tgb.linkproppred.evaluate import Evaluator
 
 
 def evaluate_model_link_prediction(model_name: str, model: nn.Module, neighbor_sampler: NeighborSampler, evaluate_idx_data_loader: DataLoader,
@@ -46,6 +36,8 @@ def evaluate_model_link_prediction(model_name: str, model: nn.Module, neighbor_s
     # Ensures the random sampler uses a fixed seed for evaluation (i.e. we always sample the same negatives for validation / test set)
     assert evaluate_neg_edge_sampler.seed is not None
     evaluate_neg_edge_sampler.reset_random_state()
+
+    evaluator = Evaluator("tgbl-wiki")
 
     if model_name in ['DyRep', 'TGAT', 'TGN', 'CAWN', 'TCL', 'GraphMixer', 'DyGFormer']:
         # evaluation phase use all the graph information
@@ -182,8 +174,14 @@ def evaluate_model_link_prediction(model_name: str, model: nn.Module, neighbor_s
             negative_probs = negative_logits_cat.sigmoid()
             predicts = logits.sigmoid()
 
+            input_dict = {
+                'y_pred_pos': np.array(positive_probabilities.detach().cpu()),
+                'y_pred_neg': np.array(negative_probs.detach().cpu()),
+                'eval_metric': ['mrr']
+            }
+
             _eval_results = get_link_prediction_metrics(predicts=predicts, labels=labels)
-            _eval_results['mrr'] = _compute_mrr(positive_probabilities, negative_probs)
+            _eval_results['mrr'] = evaluator.eval(input_dict)['mrr']
             evaluate_metrics.append(_eval_results)
 
 

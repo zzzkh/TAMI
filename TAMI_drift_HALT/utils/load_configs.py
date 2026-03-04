@@ -61,6 +61,7 @@ def get_link_prediction_args(is_evaluation: bool = False):
     parser.add_argument('--drift_bank_size', type=int, default=65536, help='GPU ring buffer size for positive dst embeddings')
     parser.add_argument('--drift_pos_sample_size', type=int, default=256, help='how many positives to sample from bank for drifting loss')
     parser.add_argument('--drift_no_normalize', action='store_true', default=False, help='disable L2-normalization before drifting loss')
+    parser.add_argument('--use_halt', type=int, choices=[0, 1], default=1, help='whether to use HALT training (1: on, 0: off)')
     parser.add_argument('--halt_num_negatives', type=int, default=8, help='number of negatives per positive in HALT')
     parser.add_argument('--halt_hard_ratio', type=float, default=0.3, help='ratio of hard negatives in HALT')
     parser.add_argument('--halt_base_tau', type=float, default=0.08, help='base temperature in HALT')
