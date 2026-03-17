@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/tmp/run_safe_train_untrade20_gpu1.py", line 28, in <module>
+    runpy.run_path('train_link_prediction.py', run_name='__main__')
+  File "/root/anaconda3/envs/tami2/lib/python3.8/runpy.py", line 265, in run_path
+    return _run_module_code(code, init_globals, run_name,
+  File "/root/anaconda3/envs/tami2/lib/python3.8/runpy.py", line 97, in _run_module_code
+    _run_code(code, mod_globals, init_globals,
+  File "/root/anaconda3/envs/tami2/lib/python3.8/runpy.py", line 87, in _run_code
+    exec(code, run_globals)
+  File "train_link_prediction.py", line 14, in <module>
+    from models.TGAT import TGAT
+ModuleNotFoundError: No module named 'models'

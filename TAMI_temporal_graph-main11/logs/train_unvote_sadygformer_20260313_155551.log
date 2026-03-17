@@ -1,0 +1,18 @@
+nohup: ignoring input
+INFO:root:********** Run 1 starts. **********
+INFO:root:configuration is Namespace(batch_size=64, channel_embedding_dim=50, dataset_name='UNvote', device='cuda:0', dropout=0.2, edge_bank_memory_mode='unlimited_memory', eval_negative_sample_strategy='historical', eval_num_neg_edges=1, gamma=0.9, gpu=0, learning_rate=0.0001, load_best_configs=True, max_input_sequence_length=128, max_snapshot_batch_size=80, model_name='SADyGFormer', negative_sample_strategy='historical', not_load_trc_memory=False, num_epochs=100, num_heads=2, num_layers=2, num_neg_edges=1, num_neighbors=20, num_runs=1, num_walk_heads=8, optimizer='Adam', patch_size=4, patience=20, position_feat_dim=172, ranking_loss_weight=1.0, same_time_mode='snapshot_context', sample_neighbor_strategy='recent', save_model_name='SADyGFormer_seed0', seed=0, snapshot_context_mode='global', snapshot_update_mode='deferred', test_interval_epochs=100, test_ratio=0.15, time_feat_dim=100, time_gap=2000, time_mode='snapshot', time_scaling_factor=1e-06, time_window_mode='fixed_proportion', train_negative_sample_strategy='historical', train_num_neg_edges=1, val_ratio=0.15, walk_length=1, weight_decay=0.0)
+The dataset has 103574 interactions, involving 124 different nodes
+The training dataset has 58039 interactions, involving 101 different nodes
+The validation dataset has 20015 interactions, involving 122 different nodes
+The test dataset has 10504 interactions, involving 123 different nodes
+The new node validation dataset has 5819 interactions, involving 122 different nodes
+The new node test dataset has 3467 interactions, involving 123 different nodes
+12 nodes were used for the inductive testing, i.e. are never seen during training
+Traceback (most recent call last):
+  File "train_link_prediction.py", line 156, in <module>
+    dynamic_backbone = SADyGFormer(node_raw_features=node_raw_features, edge_raw_features=edge_raw_features, neighbor_sampler=train_neighbor_sampler,
+  File "/root/data3/zkh/TAMI_temporal_graph-main11/models/DyGFormer.py", line 32, in __init__
+    self.node_raw_features = torch.from_numpy(node_raw_features.astype(np.float32)).to(device)
+RuntimeError: CUDA error: out of memory
+CUDA kernel errors might be asynchronously reported at some other API call,so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1.

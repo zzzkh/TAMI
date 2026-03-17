@@ -1,0 +1,113 @@
+The dataset has 101499 interactions, involving 246 different nodes
+The training dataset has 61574 interactions, involving 221 different nodes
+The validation dataset has 13179 interactions, involving 242 different nodes
+The test dataset has 5646 interactions, involving 237 different nodes
+The new node validation dataset has 3186 interactions, involving 232 different nodes
+The new node test dataset has 1593 interactions, involving 225 different nodes
+24 nodes were used for the inductive testing, i.e. are never seen during training
+INFO:root:********** Run 1 starts. **********
+INFO:root:configuration is Namespace(batch_size=64, channel_embedding_dim=50, dataset_name='UNtrade', device='cuda:1', dropout=0.2, edge_bank_memory_mode='unlimited_memory', eval_negative_sample_strategy='historical', eval_num_neg_edges=1, gamma=0.9, gpu=1, learning_rate=0.0001, load_best_configs=True, max_input_sequence_length=128, max_snapshot_batch_size=80, model_name='SADyGFormer', negative_sample_strategy='historical', not_load_trc_memory=True, num_epochs=100, num_heads=2, num_layers=2, num_neg_edges=1, num_neighbors=20, num_runs=1, num_walk_heads=8, optimizer='Adam', patch_size=4, patience=20, position_feat_dim=172, ranking_loss_weight=1.0, same_time_mode='snapshot_context', sample_neighbor_strategy='recent', save_model_name='SADyGFormer_seed0', seed=0, snapshot_context_mode='global', snapshot_update_mode='deferred', test_interval_epochs=100, test_ratio=0.15, time_feat_dim=100, time_gap=2000, time_mode='snapshot', time_scaling_factor=1e-06, time_window_mode='fixed_proportion', train_negative_sample_strategy='historical', train_num_neg_edges=1, val_ratio=0.15, walk_length=1, weight_decay=0.0)
+[system] hyperparameter gamma value: 0.9.
+INFO:root:model -> Sequential(
+  (0): SADyGFormer(
+    (time_encoder): TimeEncoder(
+      (w): Linear(in_features=1, out_features=100, bias=True)
+    )
+    (neighbor_co_occurrence_encoder): NeighborCooccurrenceEncoder(
+      (neighbor_co_occurrence_encode_layer): Sequential(
+        (0): Linear(in_features=1, out_features=50, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=50, out_features=50, bias=True)
+      )
+    )
+    (projection_layer): ModuleDict(
+      (node): Linear(in_features=688, out_features=50, bias=True)
+      (edge): Linear(in_features=688, out_features=50, bias=True)
+      (time): Linear(in_features=400, out_features=50, bias=True)
+      (neighbor_co_occurrence): Linear(in_features=200, out_features=50, bias=True)
+    )
+    (transformers): ModuleList(
+      (0): TransformerEncoder(
+        (multi_head_attention): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=200, out_features=200, bias=True)
+        )
+        (dropout): Dropout(p=0.2, inplace=False)
+        (linear_layers): ModuleList(
+          (0): Linear(in_features=200, out_features=800, bias=True)
+          (1): Linear(in_features=800, out_features=200, bias=True)
+        )
+        (norm_layers): ModuleList(
+          (0): LayerNorm((200,), eps=1e-05, elementwise_affine=True)
+          (1): LayerNorm((200,), eps=1e-05, elementwise_affine=True)
+        )
+      )
+      (1): TransformerEncoder(
+        (multi_head_attention): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=200, out_features=200, bias=True)
+        )
+        (dropout): Dropout(p=0.2, inplace=False)
+        (linear_layers): ModuleList(
+          (0): Linear(in_features=200, out_features=800, bias=True)
+          (1): Linear(in_features=800, out_features=200, bias=True)
+        )
+        (norm_layers): ModuleList(
+          (0): LayerNorm((200,), eps=1e-05, elementwise_affine=True)
+          (1): LayerNorm((200,), eps=1e-05, elementwise_affine=True)
+        )
+      )
+    )
+    (output_layer): Linear(in_features=200, out_features=172, bias=True)
+  )
+  (1): HistoricalDecoder(
+    (fc1): Linear(in_features=344, out_features=172, bias=True)
+    (fc2): Linear(in_features=344, out_features=1, bias=True)
+    (act): ReLU()
+    (aggregate_hist_emb): HistEmbAggregatorWeightedSum()
+    (historical_interaction_memory): TRCMemory()
+    (snapshot_context_encoder): SnapshotGlobalContextEncoder(
+      (edge_mlp): Sequential(
+        (0): Linear(in_features=688, out_features=172, bias=True)
+        (1): ReLU()
+        (2): Dropout(p=0.1, inplace=False)
+        (3): Linear(in_features=172, out_features=172, bias=True)
+      )
+    )
+    (snapshot_fusion_gate): SnapshotFusionGate(
+      (ctx_proj): Linear(in_features=172, out_features=172, bias=True)
+      (gate): Linear(in_features=344, out_features=172, bias=True)
+    )
+  )
+)
+INFO:root:model name: SADyGFormer, #parameters: 5594668 B, 5463.54296875 KB, 5.335491180419922 MB.
+  0%|                                                                                             | 0/8 [00:00<?, ?it/s]Epoch: 1, train snapshot 1, train loss: 1.3863:   0%|                                             | 0/8 [00:09<?, ?it/s]Epoch: 1, train snapshot 1, train loss: 1.3863:  12%|████▋                                | 1/8 [00:09<01:08,  9.83s/it]Epoch: 1, train snapshot 2, train loss: 3395.5322:  12%|████▎                             | 1/8 [01:16<01:08,  9.83s/it]Epoch: 1, train snapshot 2, train loss: 3395.5322:  25%|████████▌                         | 2/8 [01:16<04:19, 43.26s/it]Epoch: 1, train snapshot 3, train loss: 4579.1069:  25%|████████▌                         | 2/8 [02:27<04:19, 43.26s/it]Epoch: 1, train snapshot 3, train loss: 4579.1069:  38%|████████████▊                     | 3/8 [02:27<04:38, 55.72s/it]Epoch: 1, train snapshot 4, train loss: 5613.9184:  38%|████████████▊                     | 3/8 [04:00<04:38, 55.72s/it]Epoch: 1, train snapshot 4, train loss: 5613.9184:  50%|█████████████████                 | 4/8 [04:00<04:42, 70.51s/it]Epoch: 1, train snapshot 5, train loss: 6080.5577:  50%|█████████████████                 | 4/8 [05:32<04:42, 70.51s/it]Epoch: 1, train snapshot 5, train loss: 6080.5577:  62%|█████████████████████▎            | 5/8 [05:32<03:54, 78.21s/it]Epoch: 1, train snapshot 6, train loss: 3142.8512:  62%|█████████████████████▎            | 5/8 [07:22<03:54, 78.21s/it]Epoch: 1, train snapshot 6, train loss: 3142.8512:  75%|█████████████████████████▌        | 6/8 [07:22<02:58, 89.05s/it]Epoch: 1, train snapshot 7, train loss: 1160.8750:  75%|█████████████████████████▌        | 6/8 [09:30<02:58, 89.05s/it]Epoch: 1, train snapshot 7, train loss: 1160.8750:  88%|████████████████████████████▉    | 7/8 [09:30<01:41, 101.94s/it]Epoch: 1, train snapshot 8, train loss: 2274.9844:  88%|████████████████████████████▉    | 7/8 [11:48<01:41, 101.94s/it]Epoch: 1, train snapshot 8, train loss: 2274.9844: 100%|█████████████████████████████████| 8/8 [11:48<00:00, 113.35s/it]Epoch: 1, train snapshot 8, train loss: 2274.9844: 100%|██████████████████████████████████| 8/8 [11:48<00:00, 88.55s/it]
+  0%|                                                                                             | 0/1 [00:00<?, ?it/s]evaluate snapshot 1, evaluate loss: 2894.9491:   0%|                                              | 0/1 [00:25<?, ?it/s]evaluate snapshot 1, evaluate loss: 2894.9491: 100%|██████████████████████████████████████| 1/1 [00:25<00:00, 25.33s/it]evaluate snapshot 1, evaluate loss: 2894.9491: 100%|██████████████████████████████████████| 1/1 [00:25<00:00, 25.33s/it]
+INFO:root:Epoch: 1, learning rate: 0.0001, train loss: 3210.7228
+INFO:root:train average_precision, 0.5003
+INFO:root:train roc_auc, 0.4880
+INFO:root:validate loss: 2894.9491
+INFO:root:validate average_precision, 0.5000
+INFO:root:validate roc_auc, 0.5000
+INFO:root:validate mrr, 0.5000
+INFO:root:save model ./saved_models/SADyGFormer/UNtrade/SADyGFormer_seed0/SADyGFormer_seed0.pkl
+INFO:root:skip saving TRC memory because not_load_trc_memory=True
+  0%|                                                                                             | 0/8 [00:00<?, ?it/s]Epoch: 2, train snapshot 1, train loss: 1.3869:   0%|                                             | 0/8 [00:08<?, ?it/s]Epoch: 2, train snapshot 1, train loss: 1.3869:  12%|████▋                                | 1/8 [00:08<00:56,  8.01s/it]Epoch: 2, train snapshot 2, train loss: 3682.6130:  12%|████▎                             | 1/8 [01:13<00:56,  8.01s/it]Epoch: 2, train snapshot 2, train loss: 3682.6130:  25%|████████▌                         | 2/8 [01:13<04:11, 41.96s/it]Epoch: 2, train snapshot 3, train loss: 3209.0314:  25%|████████▌                         | 2/8 [02:24<04:11, 41.96s/it]Epoch: 2, train snapshot 3, train loss: 3209.0314:  38%|████████████▊                     | 3/8 [02:24<04:34, 54.96s/it]Epoch: 2, train snapshot 4, train loss: 5585.6081:  38%|████████████▊                     | 3/8 [03:57<04:34, 54.96s/it]Epoch: 2, train snapshot 4, train loss: 5585.6081:  50%|█████████████████                 | 4/8 [03:57<04:40, 70.01s/it]Epoch: 2, train snapshot 5, train loss: 3497.9493:  50%|█████████████████                 | 4/8 [05:28<04:40, 70.01s/it]Epoch: 2, train snapshot 5, train loss: 3497.9493:  62%|█████████████████████▎            | 5/8 [05:28<03:52, 77.56s/it]Epoch: 2, train snapshot 6, train loss: 1938.7881:  62%|█████████████████████▎            | 5/8 [07:17<03:52, 77.56s/it]Epoch: 2, train snapshot 6, train loss: 1938.7881:  75%|█████████████████████████▌        | 6/8 [07:17<02:56, 88.44s/it]Epoch: 2, train snapshot 7, train loss: 1628.7661:  75%|█████████████████████████▌        | 6/8 [09:27<02:56, 88.44s/it]Epoch: 2, train snapshot 7, train loss: 1628.7661:  88%|████████████████████████████▉    | 7/8 [09:27<01:41, 101.96s/it]Epoch: 2, train snapshot 8, train loss: 1783.9574:  88%|████████████████████████████▉    | 7/8 [11:45<01:41, 101.96s/it]Epoch: 2, train snapshot 8, train loss: 1783.9574: 100%|█████████████████████████████████| 8/8 [11:45<00:00, 113.41s/it]Epoch: 2, train snapshot 8, train loss: 1783.9574: 100%|██████████████████████████████████| 8/8 [11:45<00:00, 88.18s/it]
+  0%|                                                                                             | 0/1 [00:00<?, ?it/s]evaluate snapshot 1, evaluate loss: 1047.2650:   0%|                                              | 0/1 [00:24<?, ?it/s]evaluate snapshot 1, evaluate loss: 1047.2650: 100%|██████████████████████████████████████| 1/1 [00:24<00:00, 24.69s/it]evaluate snapshot 1, evaluate loss: 1047.2650: 100%|██████████████████████████████████████| 1/1 [00:24<00:00, 24.69s/it]
+INFO:root:Epoch: 2, learning rate: 0.0001, train loss: 2612.6922
+INFO:root:train average_precision, 0.5016
+INFO:root:train roc_auc, 0.4997
+INFO:root:validate loss: 1047.2650
+INFO:root:validate average_precision, 0.5968
+INFO:root:validate roc_auc, 0.6588
+INFO:root:validate mrr, 0.6773
+INFO:root:save model ./saved_models/SADyGFormer/UNtrade/SADyGFormer_seed0/SADyGFormer_seed0.pkl
+INFO:root:skip saving TRC memory because not_load_trc_memory=True
+  0%|                                                                                             | 0/8 [00:00<?, ?it/s]Epoch: 3, train snapshot 1, train loss: 1.3865:   0%|                                             | 0/8 [00:08<?, ?it/s]Epoch: 3, train snapshot 1, train loss: 1.3865:  12%|████▋                                | 1/8 [00:08<00:56,  8.05s/it]Epoch: 3, train snapshot 2, train loss: 1538.2631:  12%|████▎                             | 1/8 [01:14<00:56,  8.05s/it]Epoch: 3, train snapshot 2, train loss: 1538.2631:  25%|████████▌                         | 2/8 [01:14<04:13, 42.19s/it]Epoch: 3, train snapshot 3, train loss: 1660.0136:  25%|████████▌                         | 2/8 [02:25<04:13, 42.19s/it]Epoch: 3, train snapshot 3, train loss: 1660.0136:  38%|████████████▊                     | 3/8 [02:25<04:37, 55.54s/it]Epoch: 3, train snapshot 4, train loss: 2436.3387:  38%|████████████▊                     | 3/8 [03:58<04:37, 55.54s/it]Epoch: 3, train snapshot 4, train loss: 2436.3387:  50%|█████████████████                 | 4/8 [03:58<04:41, 70.36s/it]Epoch: 3, train snapshot 5, train loss: 2937.9717:  50%|█████████████████                 | 4/8 [05:30<04:41, 70.36s/it]Epoch: 3, train snapshot 5, train loss: 2937.9717:  62%|█████████████████████▎            | 5/8 [05:30<03:54, 78.09s/it]Epoch: 3, train snapshot 6, train loss: 2908.4619:  62%|█████████████████████▎            | 5/8 [07:20<03:54, 78.09s/it]Epoch: 3, train snapshot 6, train loss: 2908.4619:  75%|█████████████████████████▌        | 6/8 [07:20<02:58, 89.04s/it]Epoch: 3, train snapshot 7, train loss: 2082.2681:  75%|█████████████████████████▌        | 6/8 [09:30<02:58, 89.04s/it]Epoch: 3, train snapshot 7, train loss: 2082.2681:  88%|████████████████████████████▉    | 7/8 [09:30<01:42, 102.45s/it]Epoch: 3, train snapshot 8, train loss: 1755.0857:  88%|████████████████████████████▉    | 7/8 [11:49<01:42, 102.45s/it]Epoch: 3, train snapshot 8, train loss: 1755.0857: 100%|█████████████████████████████████| 8/8 [11:49<00:00, 114.10s/it]Epoch: 3, train snapshot 8, train loss: 1755.0857: 100%|██████████████████████████████████| 8/8 [11:49<00:00, 88.73s/it]
+  0%|                                                                                             | 0/1 [00:00<?, ?it/s]evaluate snapshot 1, evaluate loss: 1298.5065:   0%|                                              | 0/1 [00:24<?, ?it/s]evaluate snapshot 1, evaluate loss: 1298.5065: 100%|██████████████████████████████████████| 1/1 [00:24<00:00, 24.77s/it]evaluate snapshot 1, evaluate loss: 1298.5065: 100%|██████████████████████████████████████| 1/1 [00:24<00:00, 24.77s/it]
+INFO:root:Epoch: 3, learning rate: 0.0001, train loss: 1937.5503
+INFO:root:train average_precision, 0.5084
+INFO:root:train roc_auc, 0.4930
+INFO:root:validate loss: 1298.5065
+INFO:root:validate average_precision, 0.5324
+INFO:root:validate roc_auc, 0.5169
+INFO:root:validate mrr, 0.6147
+  0%|                                                                                             | 0/8 [00:00<?, ?it/s]Epoch: 4, train snapshot 1, train loss: 1.3869:   0%|                                             | 0/8 [00:08<?, ?it/s]Epoch: 4, train snapshot 1, train loss: 1.3869:  12%|████▋                                | 1/8 [00:08<00:56,  8.02s/it]

@@ -1,0 +1,369 @@
+2026-03-13 01:07:12,801 - root - INFO - ********** Run 1 starts. **********
+2026-03-13 01:07:12,801 - root - INFO - configuration is Namespace(batch_size=64, channel_embedding_dim=50, dataset_name='UNvote', device='cuda:0', dropout=0.2, edge_bank_memory_mode='unlimited_memory', eval_negative_sample_strategy='random', eval_num_neg_edges=20, gamma=0.9, gpu=0, learning_rate=0.0001, load_best_configs=False, max_input_sequence_length=128, max_snapshot_batch_size=80, model_name='SADyGFormer', negative_sample_strategy='random', not_load_trc_memory=False, num_epochs=100, num_heads=2, num_layers=2, num_neg_edges=1, num_neighbors=20, num_runs=1, num_walk_heads=8, optimizer='Adam', patch_size=4, patience=20, position_feat_dim=172, ranking_loss_weight=1.0, same_time_mode='snapshot_context', sample_neighbor_strategy='recent', save_model_name='SADyGFormer_seed0', seed=0, snapshot_context_mode='global', snapshot_update_mode='deferred', test_interval_epochs=100, test_ratio=0.15, time_feat_dim=100, time_gap=2000, time_mode='snapshot', time_scaling_factor=1e-06, time_window_mode='fixed_proportion', train_negative_sample_strategy='random', train_num_neg_edges=1, val_ratio=0.15, walk_length=1, weight_decay=0.0)
+2026-03-13 01:07:15,660 - root - INFO - model -> Sequential(
+  (0): SADyGFormer(
+    (time_encoder): TimeEncoder(
+      (w): Linear(in_features=1, out_features=100, bias=True)
+    )
+    (neighbor_co_occurrence_encoder): NeighborCooccurrenceEncoder(
+      (neighbor_co_occurrence_encode_layer): Sequential(
+        (0): Linear(in_features=1, out_features=50, bias=True)
+        (1): ReLU()
+        (2): Linear(in_features=50, out_features=50, bias=True)
+      )
+    )
+    (projection_layer): ModuleDict(
+      (node): Linear(in_features=688, out_features=50, bias=True)
+      (edge): Linear(in_features=688, out_features=50, bias=True)
+      (time): Linear(in_features=400, out_features=50, bias=True)
+      (neighbor_co_occurrence): Linear(in_features=200, out_features=50, bias=True)
+    )
+    (transformers): ModuleList(
+      (0): TransformerEncoder(
+        (multi_head_attention): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=200, out_features=200, bias=True)
+        )
+        (dropout): Dropout(p=0.2, inplace=False)
+        (linear_layers): ModuleList(
+          (0): Linear(in_features=200, out_features=800, bias=True)
+          (1): Linear(in_features=800, out_features=200, bias=True)
+        )
+        (norm_layers): ModuleList(
+          (0): LayerNorm((200,), eps=1e-05, elementwise_affine=True)
+          (1): LayerNorm((200,), eps=1e-05, elementwise_affine=True)
+        )
+      )
+      (1): TransformerEncoder(
+        (multi_head_attention): MultiheadAttention(
+          (out_proj): NonDynamicallyQuantizableLinear(in_features=200, out_features=200, bias=True)
+        )
+        (dropout): Dropout(p=0.2, inplace=False)
+        (linear_layers): ModuleList(
+          (0): Linear(in_features=200, out_features=800, bias=True)
+          (1): Linear(in_features=800, out_features=200, bias=True)
+        )
+        (norm_layers): ModuleList(
+          (0): LayerNorm((200,), eps=1e-05, elementwise_affine=True)
+          (1): LayerNorm((200,), eps=1e-05, elementwise_affine=True)
+        )
+      )
+    )
+    (output_layer): Linear(in_features=200, out_features=172, bias=True)
+  )
+  (1): HistoricalDecoder(
+    (fc1): Linear(in_features=344, out_features=172, bias=True)
+    (fc2): Linear(in_features=344, out_features=1, bias=True)
+    (act): ReLU()
+    (aggregate_hist_emb): HistEmbAggregatorWeightedSum()
+    (historical_interaction_memory): TRCMemory()
+    (snapshot_context_encoder): SnapshotGlobalContextEncoder(
+      (edge_mlp): Sequential(
+        (0): Linear(in_features=688, out_features=172, bias=True)
+        (1): ReLU()
+        (2): Dropout(p=0.1, inplace=False)
+        (3): Linear(in_features=172, out_features=172, bias=True)
+      )
+    )
+    (snapshot_fusion_gate): SnapshotFusionGate(
+      (ctx_proj): Linear(in_features=172, out_features=172, bias=True)
+      (gate): Linear(in_features=344, out_features=172, bias=True)
+    )
+  )
+)
+2026-03-13 01:07:15,661 - root - INFO - model name: SADyGFormer, #parameters: 5594668 B, 5463.54296875 KB, 5.335491180419922 MB.
+2026-03-13 01:17:52,397 - root - INFO - Epoch: 1, learning rate: 0.0001, train loss: 1.3416
+2026-03-13 01:17:52,398 - root - INFO - train average_precision, 0.5612
+2026-03-13 01:17:52,398 - root - INFO - train roc_auc, 0.5915
+2026-03-13 01:17:52,398 - root - INFO - validate loss: 0.8118
+2026-03-13 01:17:52,398 - root - INFO - validate average_precision, 0.0539
+2026-03-13 01:17:52,398 - root - INFO - validate roc_auc, 0.5217
+2026-03-13 01:17:52,398 - root - INFO - validate mrr, 0.1767
+2026-03-13 01:17:52,399 - root - INFO - save model ./saved_models/SADyGFormer/UNvote/SADyGFormer_seed0/SADyGFormer_seed0.pkl
+2026-03-13 01:31:07,397 - root - INFO - Epoch: 2, learning rate: 0.0001, train loss: 1.2785
+2026-03-13 01:31:07,397 - root - INFO - train average_precision, 0.5649
+2026-03-13 01:31:07,397 - root - INFO - train roc_auc, 0.5990
+2026-03-13 01:31:07,398 - root - INFO - validate loss: 0.7712
+2026-03-13 01:31:07,398 - root - INFO - validate average_precision, 0.0610
+2026-03-13 01:31:07,398 - root - INFO - validate roc_auc, 0.5618
+2026-03-13 01:31:07,398 - root - INFO - validate mrr, 0.1909
+2026-03-13 01:31:07,399 - root - INFO - save model ./saved_models/SADyGFormer/UNvote/SADyGFormer_seed0/SADyGFormer_seed0.pkl
+2026-03-13 01:44:36,903 - root - INFO - Epoch: 3, learning rate: 0.0001, train loss: 1.2646
+2026-03-13 01:44:36,904 - root - INFO - train average_precision, 0.6064
+2026-03-13 01:44:36,905 - root - INFO - train roc_auc, 0.6383
+2026-03-13 01:44:36,905 - root - INFO - validate loss: 0.7540
+2026-03-13 01:44:36,905 - root - INFO - validate average_precision, 0.0661
+2026-03-13 01:44:36,905 - root - INFO - validate roc_auc, 0.5867
+2026-03-13 01:44:36,905 - root - INFO - validate mrr, 0.2018
+2026-03-13 01:44:36,906 - root - INFO - save model ./saved_models/SADyGFormer/UNvote/SADyGFormer_seed0/SADyGFormer_seed0.pkl
+2026-03-13 01:58:08,960 - root - INFO - Epoch: 4, learning rate: 0.0001, train loss: 1.2522
+2026-03-13 01:58:08,961 - root - INFO - train average_precision, 0.6127
+2026-03-13 01:58:08,961 - root - INFO - train roc_auc, 0.6486
+2026-03-13 01:58:08,961 - root - INFO - validate loss: 0.7637
+2026-03-13 01:58:08,962 - root - INFO - validate average_precision, 0.0661
+2026-03-13 01:58:08,962 - root - INFO - validate roc_auc, 0.5901
+2026-03-13 01:58:08,962 - root - INFO - validate mrr, 0.2037
+2026-03-13 01:58:08,963 - root - INFO - save model ./saved_models/SADyGFormer/UNvote/SADyGFormer_seed0/SADyGFormer_seed0.pkl
+2026-03-13 02:11:43,060 - root - INFO - Epoch: 5, learning rate: 0.0001, train loss: 1.2471
+2026-03-13 02:11:43,061 - root - INFO - train average_precision, 0.6144
+2026-03-13 02:11:43,061 - root - INFO - train roc_auc, 0.6524
+2026-03-13 02:11:43,061 - root - INFO - validate loss: 0.7533
+2026-03-13 02:11:43,062 - root - INFO - validate average_precision, 0.0670
+2026-03-13 02:11:43,062 - root - INFO - validate roc_auc, 0.5927
+2026-03-13 02:11:43,062 - root - INFO - validate mrr, 0.2051
+2026-03-13 02:11:43,062 - root - INFO - save model ./saved_models/SADyGFormer/UNvote/SADyGFormer_seed0/SADyGFormer_seed0.pkl
+2026-03-13 02:25:15,234 - root - INFO - Epoch: 6, learning rate: 0.0001, train loss: 1.2428
+2026-03-13 02:25:15,234 - root - INFO - train average_precision, 0.6139
+2026-03-13 02:25:15,235 - root - INFO - train roc_auc, 0.6522
+2026-03-13 02:25:15,235 - root - INFO - validate loss: 0.7434
+2026-03-13 02:25:15,235 - root - INFO - validate average_precision, 0.0672
+2026-03-13 02:25:15,235 - root - INFO - validate roc_auc, 0.5934
+2026-03-13 02:25:15,235 - root - INFO - validate mrr, 0.2054
+2026-03-13 02:25:15,236 - root - INFO - save model ./saved_models/SADyGFormer/UNvote/SADyGFormer_seed0/SADyGFormer_seed0.pkl
+2026-03-13 02:38:36,035 - root - INFO - Epoch: 7, learning rate: 0.0001, train loss: 1.2363
+2026-03-13 02:38:36,036 - root - INFO - train average_precision, 0.6164
+2026-03-13 02:38:36,036 - root - INFO - train roc_auc, 0.6541
+2026-03-13 02:38:36,036 - root - INFO - validate loss: 0.7383
+2026-03-13 02:38:36,036 - root - INFO - validate average_precision, 0.0673
+2026-03-13 02:38:36,036 - root - INFO - validate roc_auc, 0.5951
+2026-03-13 02:38:36,037 - root - INFO - validate mrr, 0.2059
+2026-03-13 02:38:36,037 - root - INFO - save model ./saved_models/SADyGFormer/UNvote/SADyGFormer_seed0/SADyGFormer_seed0.pkl
+2026-03-13 02:51:56,734 - root - INFO - Epoch: 8, learning rate: 0.0001, train loss: 1.2341
+2026-03-13 02:51:56,735 - root - INFO - train average_precision, 0.6116
+2026-03-13 02:51:56,735 - root - INFO - train roc_auc, 0.6503
+2026-03-13 02:51:56,735 - root - INFO - validate loss: 0.7261
+2026-03-13 02:51:56,735 - root - INFO - validate average_precision, 0.0671
+2026-03-13 02:51:56,735 - root - INFO - validate roc_auc, 0.5962
+2026-03-13 02:51:56,735 - root - INFO - validate mrr, 0.2066
+2026-03-13 03:02:37,353 - root - INFO - Epoch: 9, learning rate: 0.0001, train loss: 1.2287
+2026-03-13 03:02:37,353 - root - INFO - train average_precision, 0.6143
+2026-03-13 03:02:37,354 - root - INFO - train roc_auc, 0.6528
+2026-03-13 03:02:37,354 - root - INFO - validate loss: 0.7151
+2026-03-13 03:02:37,354 - root - INFO - validate average_precision, 0.0670
+2026-03-13 03:02:37,354 - root - INFO - validate roc_auc, 0.5963
+2026-03-13 03:02:37,354 - root - INFO - validate mrr, 0.2066
+2026-03-13 03:13:00,188 - root - INFO - Epoch: 10, learning rate: 0.0001, train loss: 1.2242
+2026-03-13 03:13:00,189 - root - INFO - train average_precision, 0.6158
+2026-03-13 03:13:00,189 - root - INFO - train roc_auc, 0.6547
+2026-03-13 03:13:00,189 - root - INFO - validate loss: 0.7013
+2026-03-13 03:13:00,189 - root - INFO - validate average_precision, 0.0668
+2026-03-13 03:13:00,189 - root - INFO - validate roc_auc, 0.5965
+2026-03-13 03:13:00,190 - root - INFO - validate mrr, 0.2075
+2026-03-13 03:23:21,464 - root - INFO - Epoch: 11, learning rate: 0.0001, train loss: 1.2165
+2026-03-13 03:23:21,465 - root - INFO - train average_precision, 0.6135
+2026-03-13 03:23:21,465 - root - INFO - train roc_auc, 0.6528
+2026-03-13 03:23:21,465 - root - INFO - validate loss: 0.6724
+2026-03-13 03:23:21,465 - root - INFO - validate average_precision, 0.0666
+2026-03-13 03:23:21,466 - root - INFO - validate roc_auc, 0.5962
+2026-03-13 03:23:21,466 - root - INFO - validate mrr, 0.2066
+2026-03-13 03:33:44,592 - root - INFO - Epoch: 12, learning rate: 0.0001, train loss: 1.2040
+2026-03-13 03:33:44,593 - root - INFO - train average_precision, 0.6152
+2026-03-13 03:33:44,593 - root - INFO - train roc_auc, 0.6558
+2026-03-13 03:33:44,593 - root - INFO - validate loss: 0.6599
+2026-03-13 03:33:44,593 - root - INFO - validate average_precision, 0.0666
+2026-03-13 03:33:44,593 - root - INFO - validate roc_auc, 0.5974
+2026-03-13 03:33:44,593 - root - INFO - validate mrr, 0.2073
+2026-03-13 03:44:10,345 - root - INFO - Epoch: 13, learning rate: 0.0001, train loss: 1.1933
+2026-03-13 03:44:10,345 - root - INFO - train average_precision, 0.6150
+2026-03-13 03:44:10,346 - root - INFO - train roc_auc, 0.6569
+2026-03-13 03:44:10,346 - root - INFO - validate loss: 0.6617
+2026-03-13 03:44:10,346 - root - INFO - validate average_precision, 0.0658
+2026-03-13 03:44:10,346 - root - INFO - validate roc_auc, 0.5951
+2026-03-13 03:44:10,346 - root - INFO - validate mrr, 0.2038
+2026-03-13 03:54:50,156 - root - INFO - Epoch: 14, learning rate: 0.0001, train loss: 1.1839
+2026-03-13 03:54:50,157 - root - INFO - train average_precision, 0.6150
+2026-03-13 03:54:50,157 - root - INFO - train roc_auc, 0.6569
+2026-03-13 03:54:50,158 - root - INFO - validate loss: 0.6318
+2026-03-13 03:54:50,158 - root - INFO - validate average_precision, 0.0649
+2026-03-13 03:54:50,158 - root - INFO - validate roc_auc, 0.5933
+2026-03-13 03:54:50,158 - root - INFO - validate mrr, 0.2023
+2026-03-13 04:05:12,744 - root - INFO - Epoch: 15, learning rate: 0.0001, train loss: 1.1789
+2026-03-13 04:05:12,744 - root - INFO - train average_precision, 0.6165
+2026-03-13 04:05:12,745 - root - INFO - train roc_auc, 0.6594
+2026-03-13 04:05:12,745 - root - INFO - validate loss: 0.6195
+2026-03-13 04:05:12,745 - root - INFO - validate average_precision, 0.0645
+2026-03-13 04:05:12,745 - root - INFO - validate roc_auc, 0.5928
+2026-03-13 04:05:12,745 - root - INFO - validate mrr, 0.2022
+2026-03-13 04:15:35,817 - root - INFO - Epoch: 16, learning rate: 0.0001, train loss: 1.1780
+2026-03-13 04:15:35,818 - root - INFO - train average_precision, 0.6137
+2026-03-13 04:15:35,818 - root - INFO - train roc_auc, 0.6575
+2026-03-13 04:15:35,818 - root - INFO - validate loss: 0.6211
+2026-03-13 04:15:35,818 - root - INFO - validate average_precision, 0.0634
+2026-03-13 04:15:35,818 - root - INFO - validate roc_auc, 0.5911
+2026-03-13 04:15:35,818 - root - INFO - validate mrr, 0.1995
+2026-03-13 04:26:16,466 - root - INFO - Epoch: 17, learning rate: 0.0001, train loss: 1.1764
+2026-03-13 04:26:16,466 - root - INFO - train average_precision, 0.6130
+2026-03-13 04:26:16,467 - root - INFO - train roc_auc, 0.6560
+2026-03-13 04:26:16,467 - root - INFO - validate loss: 0.6053
+2026-03-13 04:26:16,467 - root - INFO - validate average_precision, 0.0646
+2026-03-13 04:26:16,467 - root - INFO - validate roc_auc, 0.5920
+2026-03-13 04:26:16,467 - root - INFO - validate mrr, 0.2019
+2026-03-13 04:36:37,942 - root - INFO - Epoch: 18, learning rate: 0.0001, train loss: 1.1692
+2026-03-13 04:36:37,943 - root - INFO - train average_precision, 0.6125
+2026-03-13 04:36:37,943 - root - INFO - train roc_auc, 0.6570
+2026-03-13 04:36:37,943 - root - INFO - validate loss: 0.5785
+2026-03-13 04:36:37,943 - root - INFO - validate average_precision, 0.0653
+2026-03-13 04:36:37,943 - root - INFO - validate roc_auc, 0.5933
+2026-03-13 04:36:37,944 - root - INFO - validate mrr, 0.2033
+2026-03-13 04:47:16,101 - root - INFO - Epoch: 19, learning rate: 0.0001, train loss: 1.1652
+2026-03-13 04:47:16,101 - root - INFO - train average_precision, 0.6136
+2026-03-13 04:47:16,101 - root - INFO - train roc_auc, 0.6594
+2026-03-13 04:47:16,102 - root - INFO - validate loss: 0.5782
+2026-03-13 04:47:16,102 - root - INFO - validate average_precision, 0.0660
+2026-03-13 04:47:16,102 - root - INFO - validate roc_auc, 0.5945
+2026-03-13 04:47:16,102 - root - INFO - validate mrr, 0.2061
+2026-03-13 04:57:38,193 - root - INFO - Epoch: 20, learning rate: 0.0001, train loss: 1.1541
+2026-03-13 04:57:38,194 - root - INFO - train average_precision, 0.6198
+2026-03-13 04:57:38,194 - root - INFO - train roc_auc, 0.6643
+2026-03-13 04:57:38,194 - root - INFO - validate loss: 0.6023
+2026-03-13 04:57:38,194 - root - INFO - validate average_precision, 0.0643
+2026-03-13 04:57:38,194 - root - INFO - validate roc_auc, 0.5915
+2026-03-13 04:57:38,194 - root - INFO - validate mrr, 0.1997
+2026-03-13 05:08:17,346 - root - INFO - Epoch: 21, learning rate: 0.0001, train loss: 1.1695
+2026-03-13 05:08:17,346 - root - INFO - train average_precision, 0.6160
+2026-03-13 05:08:17,346 - root - INFO - train roc_auc, 0.6594
+2026-03-13 05:08:17,347 - root - INFO - validate loss: 0.5677
+2026-03-13 05:08:17,347 - root - INFO - validate average_precision, 0.0683
+2026-03-13 05:08:17,347 - root - INFO - validate roc_auc, 0.6029
+2026-03-13 05:08:17,347 - root - INFO - validate mrr, 0.2117
+2026-03-13 05:08:17,348 - root - INFO - save model ./saved_models/SADyGFormer/UNvote/SADyGFormer_seed0/SADyGFormer_seed0.pkl
+2026-03-13 05:21:41,739 - root - INFO - Epoch: 22, learning rate: 0.0001, train loss: 1.1729
+2026-03-13 05:21:41,739 - root - INFO - train average_precision, 0.6180
+2026-03-13 05:21:41,739 - root - INFO - train roc_auc, 0.6637
+2026-03-13 05:21:41,739 - root - INFO - validate loss: 0.7631
+2026-03-13 05:21:41,740 - root - INFO - validate average_precision, 0.0602
+2026-03-13 05:21:41,740 - root - INFO - validate roc_auc, 0.5821
+2026-03-13 05:21:41,740 - root - INFO - validate mrr, 0.1860
+2026-03-13 05:32:05,611 - root - INFO - Epoch: 23, learning rate: 0.0001, train loss: 1.2133
+2026-03-13 05:32:05,612 - root - INFO - train average_precision, 0.6158
+2026-03-13 05:32:05,612 - root - INFO - train roc_auc, 0.6587
+2026-03-13 05:32:05,612 - root - INFO - validate loss: 0.7287
+2026-03-13 05:32:05,613 - root - INFO - validate average_precision, 0.0658
+2026-03-13 05:32:05,613 - root - INFO - validate roc_auc, 0.5954
+2026-03-13 05:32:05,613 - root - INFO - validate mrr, 0.2050
+2026-03-13 05:42:41,705 - root - INFO - Epoch: 24, learning rate: 0.0001, train loss: 1.1909
+2026-03-13 05:42:41,705 - root - INFO - train average_precision, 0.6168
+2026-03-13 05:42:41,706 - root - INFO - train roc_auc, 0.6620
+2026-03-13 05:42:41,706 - root - INFO - validate loss: 0.6635
+2026-03-13 05:42:41,706 - root - INFO - validate average_precision, 0.0652
+2026-03-13 05:42:41,706 - root - INFO - validate roc_auc, 0.5947
+2026-03-13 05:42:41,706 - root - INFO - validate mrr, 0.2030
+2026-03-13 05:53:18,826 - root - INFO - Epoch: 25, learning rate: 0.0001, train loss: 1.1593
+2026-03-13 05:53:18,827 - root - INFO - train average_precision, 0.6219
+2026-03-13 05:53:18,827 - root - INFO - train roc_auc, 0.6641
+2026-03-13 05:53:18,827 - root - INFO - validate loss: 0.6073
+2026-03-13 05:53:18,827 - root - INFO - validate average_precision, 0.0667
+2026-03-13 05:53:18,827 - root - INFO - validate roc_auc, 0.5988
+2026-03-13 05:53:18,827 - root - INFO - validate mrr, 0.2064
+2026-03-13 06:03:40,326 - root - INFO - Epoch: 26, learning rate: 0.0001, train loss: 1.1599
+2026-03-13 06:03:40,327 - root - INFO - train average_precision, 0.6169
+2026-03-13 06:03:40,327 - root - INFO - train roc_auc, 0.6624
+2026-03-13 06:03:40,327 - root - INFO - validate loss: 0.6097
+2026-03-13 06:03:40,327 - root - INFO - validate average_precision, 0.0659
+2026-03-13 06:03:40,328 - root - INFO - validate roc_auc, 0.5967
+2026-03-13 06:03:40,328 - root - INFO - validate mrr, 0.2042
+2026-03-13 06:14:05,695 - root - INFO - Epoch: 27, learning rate: 0.0001, train loss: 1.1486
+2026-03-13 06:14:05,696 - root - INFO - train average_precision, 0.6159
+2026-03-13 06:14:05,696 - root - INFO - train roc_auc, 0.6622
+2026-03-13 06:14:05,696 - root - INFO - validate loss: 0.6000
+2026-03-13 06:14:05,696 - root - INFO - validate average_precision, 0.0659
+2026-03-13 06:14:05,696 - root - INFO - validate roc_auc, 0.5972
+2026-03-13 06:14:05,697 - root - INFO - validate mrr, 0.2041
+2026-03-13 06:24:25,248 - root - INFO - Epoch: 28, learning rate: 0.0001, train loss: 1.1422
+2026-03-13 06:24:25,249 - root - INFO - train average_precision, 0.6200
+2026-03-13 06:24:25,249 - root - INFO - train roc_auc, 0.6645
+2026-03-13 06:24:25,249 - root - INFO - validate loss: 0.5929
+2026-03-13 06:24:25,249 - root - INFO - validate average_precision, 0.0659
+2026-03-13 06:24:25,249 - root - INFO - validate roc_auc, 0.5998
+2026-03-13 06:24:25,250 - root - INFO - validate mrr, 0.2053
+2026-03-13 06:34:50,681 - root - INFO - Epoch: 29, learning rate: 0.0001, train loss: 1.1376
+2026-03-13 06:34:50,682 - root - INFO - train average_precision, 0.6194
+2026-03-13 06:34:50,682 - root - INFO - train roc_auc, 0.6653
+2026-03-13 06:34:50,683 - root - INFO - validate loss: 0.5763
+2026-03-13 06:34:50,683 - root - INFO - validate average_precision, 0.0652
+2026-03-13 06:34:50,683 - root - INFO - validate roc_auc, 0.5977
+2026-03-13 06:34:50,683 - root - INFO - validate mrr, 0.2035
+2026-03-13 06:45:13,813 - root - INFO - Epoch: 30, learning rate: 0.0001, train loss: 1.1356
+2026-03-13 06:45:13,814 - root - INFO - train average_precision, 0.6226
+2026-03-13 06:45:13,814 - root - INFO - train roc_auc, 0.6666
+2026-03-13 06:45:13,814 - root - INFO - validate loss: 0.5762
+2026-03-13 06:45:13,814 - root - INFO - validate average_precision, 0.0653
+2026-03-13 06:45:13,814 - root - INFO - validate roc_auc, 0.5977
+2026-03-13 06:45:13,815 - root - INFO - validate mrr, 0.2040
+2026-03-13 06:55:36,152 - root - INFO - Epoch: 31, learning rate: 0.0001, train loss: 1.1377
+2026-03-13 06:55:36,153 - root - INFO - train average_precision, 0.6215
+2026-03-13 06:55:36,153 - root - INFO - train roc_auc, 0.6667
+2026-03-13 06:55:36,153 - root - INFO - validate loss: 0.5780
+2026-03-13 06:55:36,153 - root - INFO - validate average_precision, 0.0644
+2026-03-13 06:55:36,153 - root - INFO - validate roc_auc, 0.5962
+2026-03-13 06:55:36,154 - root - INFO - validate mrr, 0.2008
+2026-03-13 07:06:00,180 - root - INFO - Epoch: 32, learning rate: 0.0001, train loss: 1.1392
+2026-03-13 07:06:00,181 - root - INFO - train average_precision, 0.6188
+2026-03-13 07:06:00,181 - root - INFO - train roc_auc, 0.6642
+2026-03-13 07:06:00,181 - root - INFO - validate loss: 0.5557
+2026-03-13 07:06:00,181 - root - INFO - validate average_precision, 0.0646
+2026-03-13 07:06:00,182 - root - INFO - validate roc_auc, 0.5971
+2026-03-13 07:06:00,182 - root - INFO - validate mrr, 0.2032
+2026-03-13 07:16:23,883 - root - INFO - Epoch: 33, learning rate: 0.0001, train loss: 1.1387
+2026-03-13 07:16:23,883 - root - INFO - train average_precision, 0.6219
+2026-03-13 07:16:23,884 - root - INFO - train roc_auc, 0.6670
+2026-03-13 07:16:23,884 - root - INFO - validate loss: 0.5912
+2026-03-13 07:16:23,884 - root - INFO - validate average_precision, 0.0642
+2026-03-13 07:16:23,884 - root - INFO - validate roc_auc, 0.5945
+2026-03-13 07:16:23,884 - root - INFO - validate mrr, 0.2008
+2026-03-13 07:26:45,932 - root - INFO - Epoch: 34, learning rate: 0.0001, train loss: 1.1329
+2026-03-13 07:26:45,933 - root - INFO - train average_precision, 0.6195
+2026-03-13 07:26:45,933 - root - INFO - train roc_auc, 0.6658
+2026-03-13 07:26:45,933 - root - INFO - validate loss: 0.5478
+2026-03-13 07:26:45,933 - root - INFO - validate average_precision, 0.0641
+2026-03-13 07:26:45,933 - root - INFO - validate roc_auc, 0.5953
+2026-03-13 07:26:45,934 - root - INFO - validate mrr, 0.2014
+2026-03-13 07:37:12,277 - root - INFO - Epoch: 35, learning rate: 0.0001, train loss: 1.1456
+2026-03-13 07:37:12,278 - root - INFO - train average_precision, 0.6225
+2026-03-13 07:37:12,278 - root - INFO - train roc_auc, 0.6659
+2026-03-13 07:37:12,278 - root - INFO - validate loss: 0.6133
+2026-03-13 07:37:12,278 - root - INFO - validate average_precision, 0.0637
+2026-03-13 07:37:12,278 - root - INFO - validate roc_auc, 0.5933
+2026-03-13 07:37:12,278 - root - INFO - validate mrr, 0.1998
+2026-03-13 07:47:49,813 - root - INFO - Epoch: 36, learning rate: 0.0001, train loss: 1.1334
+2026-03-13 07:47:49,814 - root - INFO - train average_precision, 0.6174
+2026-03-13 07:47:49,814 - root - INFO - train roc_auc, 0.6650
+2026-03-13 07:47:49,814 - root - INFO - validate loss: 0.5418
+2026-03-13 07:47:49,814 - root - INFO - validate average_precision, 0.0646
+2026-03-13 07:47:49,815 - root - INFO - validate roc_auc, 0.5985
+2026-03-13 07:47:49,815 - root - INFO - validate mrr, 0.2045
+2026-03-13 07:58:08,940 - root - INFO - Epoch: 37, learning rate: 0.0001, train loss: 1.1414
+2026-03-13 07:58:08,941 - root - INFO - train average_precision, 0.6236
+2026-03-13 07:58:08,941 - root - INFO - train roc_auc, 0.6680
+2026-03-13 07:58:08,941 - root - INFO - validate loss: 0.5970
+2026-03-13 07:58:08,941 - root - INFO - validate average_precision, 0.0631
+2026-03-13 07:58:08,941 - root - INFO - validate roc_auc, 0.5925
+2026-03-13 07:58:08,941 - root - INFO - validate mrr, 0.1981
+2026-03-13 08:08:28,352 - root - INFO - Epoch: 38, learning rate: 0.0001, train loss: 1.1353
+2026-03-13 08:08:28,353 - root - INFO - train average_precision, 0.6207
+2026-03-13 08:08:28,353 - root - INFO - train roc_auc, 0.6678
+2026-03-13 08:08:28,353 - root - INFO - validate loss: 0.5835
+2026-03-13 08:08:28,353 - root - INFO - validate average_precision, 0.0651
+2026-03-13 08:08:28,353 - root - INFO - validate roc_auc, 0.5998
+2026-03-13 08:08:28,354 - root - INFO - validate mrr, 0.2056
+2026-03-13 08:18:50,030 - root - INFO - Epoch: 39, learning rate: 0.0001, train loss: 1.1380
+2026-03-13 08:18:50,030 - root - INFO - train average_precision, 0.6214
+2026-03-13 08:18:50,031 - root - INFO - train roc_auc, 0.6679
+2026-03-13 08:18:50,031 - root - INFO - validate loss: 0.5937
+2026-03-13 08:18:50,031 - root - INFO - validate average_precision, 0.0630
+2026-03-13 08:18:50,031 - root - INFO - validate roc_auc, 0.5922
+2026-03-13 08:18:50,031 - root - INFO - validate mrr, 0.1980
+2026-03-13 08:29:11,875 - root - INFO - Epoch: 40, learning rate: 0.0001, train loss: 1.1352
+2026-03-13 08:29:11,876 - root - INFO - train average_precision, 0.6226
+2026-03-13 08:29:11,876 - root - INFO - train roc_auc, 0.6691
+2026-03-13 08:29:11,876 - root - INFO - validate loss: 0.5987
+2026-03-13 08:29:11,876 - root - INFO - validate average_precision, 0.0656
+2026-03-13 08:29:11,876 - root - INFO - validate roc_auc, 0.6008
+2026-03-13 08:29:11,876 - root - INFO - validate mrr, 0.2061
+2026-03-13 08:39:34,972 - root - INFO - Epoch: 41, learning rate: 0.0001, train loss: 1.1295
+2026-03-13 08:39:34,973 - root - INFO - train average_precision, 0.6214
+2026-03-13 08:39:34,973 - root - INFO - train roc_auc, 0.6676
+2026-03-13 08:39:34,973 - root - INFO - validate loss: 0.5648
+2026-03-13 08:39:34,973 - root - INFO - validate average_precision, 0.0646
+2026-03-13 08:39:34,973 - root - INFO - validate roc_auc, 0.5966
+2026-03-13 08:39:34,973 - root - INFO - validate mrr, 0.2029
+2026-03-13 08:39:35,742 - root - INFO - load model ./saved_models/SADyGFormer/UNvote/SADyGFormer_seed0/SADyGFormer_seed0.pkl
